@@ -8,11 +8,22 @@ import * as SophWearablesMinter from "./abis/SophWeareableMinter.json";
 const token = "0xdec404576134e5c6271782bc74f4fe17562d4eb9";
 const wearableminter = "0x91B78a96b75Fd189886904AF936Ce21A0E26B8D3";
 
+import * as usersarray from "./users.json";
+
 @Injectable()
 export class AppService {
   private provider(): ethers.JsonRpcProvider {
     const provider = new ethers.JsonRpcProvider("https://polygon-mainnet.infura.io/v3/7258c9d7e648478f9ea5edd3302cd1d8"); //('https://rpc-mumbai.maticvigil.com/');
     return provider;
+  }
+
+  async getLeaderBoard(): Promise<any> {
+    const provider = this.provider();
+    // const pointsContract = new ethers.Contract(token, SophPointsMinter.abi,provider);
+    // const tokenBalance = await pointsContract.getUserBalance(address);
+    
+    // /console.log(tokenBalance);
+    return usersarray;
   }
 
   async getBalance(address: string): Promise<number> {

@@ -10,6 +10,11 @@ export class AppController {
     return await this.appService.getBalance(address);
   }
 
+  @Get('leaderboard/')
+  async leaderBoard(): Promise<any> {
+    return await this.appService.getLeaderBoard();
+  }
+
   @Post('createuser/:address')
   async mintUser(@Param('address') address: string): Promise<string> {
     return await this.appService.createUser(address);
