@@ -5,25 +5,32 @@ import * as SophWearablesMinter from "./abis/SophWeareableMinter.json";
 // const token = "0x1c097Ce5614b9369dFf1cCc53906B9D3Be7BF001";
 // const wearableminter = "0xf3BEC3F87Fd2661fF50F3601F9F4FB930CecC116";
 
+const token1 = "0x55Eb35681f3cdd068c1b8804133387d4e72B26ec";
 const token = "0xdec404576134e5c6271782bc74f4fe17562d4eb9";
 const wearableminter = "0x91B78a96b75Fd189886904AF936Ce21A0E26B8D3";
 
-import usersarray from "./users.json";
+import usersarray from "./use.json";
 
 @Injectable()
 export class AppService {
   private provider(): ethers.JsonRpcProvider {
-    const provider = new ethers.JsonRpcProvider("https://polygon-mainnet.infura.io/v3/7258c9d7e648478f9ea5edd3302cd1d8"); //('https://rpc-mumbai.maticvigil.com/');
+    const provider = new ethers.JsonRpcProvider('https://rpc-mumbai.maticvigil.com/'); //("https://polygon-mainnet.infura.io/v3/7258c9d7e648478f9ea5edd3302cd1d8"); //
     return provider;
   }
+  
 
   async getLeaderBoard(): Promise<any> {
     const provider = this.provider();
     const leaderBoard = [];
     // get users addresses
     // get users balances and filter by highest
+    // const pointsContract = new ethers.Contract(token1, SophPointsMinter.abi,provider);
+
+    // const users = await pointsContract._users(0);
+
+    // console.log(users);
     let sortedInput = usersarray.slice().sort((a, b) => b.score - a.score);
-    // const pointsContract = new ethers.Contract(token, SophPointsMinter.abi,provider);
+   
     // const tokenBalance = await pointsContract.getUserBalance(address);
     
     // /console.log(tokenBalance);

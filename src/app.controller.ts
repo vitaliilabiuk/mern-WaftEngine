@@ -20,6 +20,11 @@ export class AppController {
     return await this.appService.createUser(address);
   }
 
+  // @Post('createusers/:address')
+  // async mintUser(@Param('address') address[]: string[]): Promise<string> {
+  //   return await this.appService.createUser(address);
+  // }
+
   @Post('mintpoints/:address/:points')
   async mintPoints(@Param('address') address: string,@Param('points') points: number): Promise<number> {
     return await this.appService.mintPoints(address, points);
