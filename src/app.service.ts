@@ -8,7 +8,7 @@ import * as SophWearablesMinter from "./abis/SophWeareableMinter.json";
 const token = "0xdec404576134e5c6271782bc74f4fe17562d4eb9";
 const wearableminter = "0x91B78a96b75Fd189886904AF936Ce21A0E26B8D3";
 
-import * as usersarray from "./users.json";
+import usersarray from "./users.json";
 
 @Injectable()
 export class AppService {
@@ -19,12 +19,18 @@ export class AppService {
 
   async getLeaderBoard(): Promise<any> {
     const provider = this.provider();
+    const leaderBoard = [];
+    // get users addresses
+    // get users balances and filter by highest
+    let sortedInput = usersarray.slice().sort((a, b) => b.score - a.score);
     // const pointsContract = new ethers.Contract(token, SophPointsMinter.abi,provider);
     // const tokenBalance = await pointsContract.getUserBalance(address);
     
     // /console.log(tokenBalance);
-    return usersarray;
+    return sortedInput.slice(0, 20);;
   }
+
+
 
   async getBalance(address: string): Promise<number> {
     const provider = this.provider();

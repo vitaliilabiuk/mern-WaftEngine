@@ -11,7 +11,7 @@ export class AppController {
   }
 
   @Get('leaderboard/')
-  async leaderBoard(): Promise<any> {
+  async leaderBoard(): Promise<JSON> {
     return await this.appService.getLeaderBoard();
   }
 
