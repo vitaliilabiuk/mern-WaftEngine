@@ -2,34 +2,58 @@ import { Injectable } from '@nestjs/common';
 import { ethers } from 'ethers';
 import * as SophPointsMinter from "./abis/SophPointsMinter.json";
 import * as SophWearablesMinter from "./abis/SophWeareableMinter.json";
-// const token = "0x1c097Ce5614b9369dFf1cCc53906B9D3Be7BF001";
+const token = "0x6Fc4E775b4f5F9D621738014de3113D2cdEAE9e7";
 // const wearableminter = "0xf3BEC3F87Fd2661fF50F3601F9F4FB930CecC116";
 
 const token1 = "0x55Eb35681f3cdd068c1b8804133387d4e72B26ec";
-const token = "0xdec404576134e5c6271782bc74f4fe17562d4eb9";
+//const token = "0xdec404576134e5c6271782bc74f4fe17562d4eb9";
 const wearableminter = "0x91B78a96b75Fd189886904AF936Ce21A0E26B8D3";
 
-import usersarray from "./use.json";
+import userspoints from "./points.json";
+import asusers from "./use.json";
+import asusersarray from "./users.json";
 
 @Injectable()
 export class AppService {
   private provider(): ethers.JsonRpcProvider {
-    const provider = new ethers.JsonRpcProvider('https://rpc-mumbai.maticvigil.com/'); //("https://polygon-mainnet.infura.io/v3/7258c9d7e648478f9ea5edd3302cd1d8"); //
+    const provider = new ethers.JsonRpcProvider("https://polygon-mainnet.infura.io/v3/7258c9d7e648478f9ea5edd3302cd1d8"); // //('https://polygon-mumbai.infura.io/v3/7258c9d7e648478f9ea5edd3302cd1d8');
     return provider;
   }
   
+
+  async addUsers(): Promise<any> {
+    const provider = this.provider();
+    const leaderBoard = [];
+    // get users addresses
+    // get users balances and filter by highest
+    const signer = new ethers.Wallet("bb419a0ef144ed597d22970dc87384182aa7ade60879f65756ce41f0b64f04ac", provider);
+    const pointsContract = new ethers.Contract(token1, SophPointsMinter.abi,signer);
+    try {
+      const addusers = await pointsContract.addUsers(asusers,userspoints,{gasLimit: 50000000, gasPrice: ethers.parseUnits("10", "gwei")});
+     // await addusers.wait();
+      console.log(addusers);
+      return addusers;
+       } catch (error){
+        return ("error"+error);
+      }
+  }
 
   async getLeaderBoard(): Promise<any> {
     const provider = this.provider();
     const leaderBoard = [];
     // get users addresses
     // get users balances and filter by highest
-    // const pointsContract = new ethers.Contract(token1, SophPointsMinter.abi,provider);
+    const pointsContract = new ethers.Contract(token1, SophPointsMinter.abi,provider);
 
-    // const users = await pointsContract._users(0);
-
-    // console.log(users);
-    let sortedInput = usersarray.slice().sort((a, b) => b.score - a.score);
+    const  userbalances = await asusersarray.forEach(async user => {
+      const balance = await pointsContract.getUserBalance(user.address);
+      return {address: user.address, score: Number(ethers.formatEther(balance))}
+    });
+    // const users = await pointsContract.getUserBalance(address);
+    console.log(userbalances);
+    //userbalances
+    let sortedInput = [];//userbalances.slice().sort((a, b) => b.score - a.score);
+    //let sortedInput = usersarray.slice().sort((a, b) => b.score - a.score);
    
     // const tokenBalance = await pointsContract.getUserBalance(address);
     
@@ -44,7 +68,7 @@ export class AppService {
     const pointsContract = new ethers.Contract(token, SophPointsMinter.abi,provider);
     const tokenBalance = await pointsContract.getUserBalance(address);
     console.log(tokenBalance);
-    return Number(ethers.formatEther(tokenBalance));
+    return Number(tokenBalance);
   }
 
   // async mintPoints(address: string, points:number): Promise<number> {
@@ -113,7 +137,7 @@ export class AppService {
       const tokenBalance = await pointsContract.getUserBalance(address);
       console.log(tokenBalance);
 
-      return Number(ethers.formatEther(tokenBalance));
+      return tokenBalance;
     } catch {
       return 0;
     }
