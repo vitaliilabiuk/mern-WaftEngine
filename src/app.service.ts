@@ -45,18 +45,17 @@ export class AppService {
     // get users balances and filter by highest
     const pointsContract = new ethers.Contract(token, SophPointsMinter.abi,provider);
 
-    const  userbalances = await asusersarray.forEach(async user => {
+    const userbalances = await asusersarray.forEach(async user => {
       const balance = await pointsContract.getUserBalance(user.address);
       return {address: user.address, score: Number(ethers.formatEther(balance))}
     });
     // const users = await pointsContract.getUserBalance(address);
     console.log(userbalances);
     //userbalances
-    let sortedInput = [];//userbalances.slice().sort((a, b) => b.score - a.score);
+    let sortedInput = [];
+    //userbalances.slice().sort((a, b) => b.score - a.score);
     //let sortedInput = usersarray.slice().sort((a, b) => b.score - a.score);
-   
     // const tokenBalance = await pointsContract.getUserBalance(address);
-    
     // /console.log(tokenBalance);
     return sortedInput.slice(0, 20);;
   }

@@ -10,10 +10,10 @@ export class AppController {
     return await this.appService.getBalance(address);
   }
 
-  @Get('leaderboard/')
-  async leaderBoard(): Promise<JSON> {
-    return await this.appService.getLeaderBoard();
-  }
+  // @Get('leaderboard/')
+  // async leaderBoard(): Promise<JSON> {
+  //   return await this.appService.getLeaderBoard();
+  // }
 
   // @Post('addusers/')
   // async addusers(): Promise<any> {
