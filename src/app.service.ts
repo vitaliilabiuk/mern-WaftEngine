@@ -130,7 +130,9 @@ export class AppService {
     const signer = new ethers.Wallet("bb419a0ef144ed597d22970dc87384182aa7ade60879f65756ce41f0b64f04ac", provider);
     const pointsContract = new ethers.Contract(token, SophPointsMinter.abi,signer);
     try {
-      const mint = await pointsContract.increaseBalance(address, ethers.parseEther(points.toString()));
+      console.log("minting points");
+      const mint = await pointsContract.increaseBalance(address, points.toString());
+      console.log(mint)
       await mint.wait();
       console.log(mint);
 
@@ -138,7 +140,8 @@ export class AppService {
       console.log(tokenBalance);
 
       return tokenBalance;
-    } catch {
+    } catch (error){
+      console.log("error"+error)
       return 0;
     }
 
