@@ -11,7 +11,7 @@ const wearableminter = "0x91B78a96b75Fd189886904AF936Ce21A0E26B8D3";
 
 import userspoints from "./points.json";
 import asusers from "./use.json";
-import asusersarray from "./users.json";
+import userbalances from "./users.json";
 
 @Injectable()
 export class AppService {
@@ -45,16 +45,16 @@ export class AppService {
     // get users balances and filter by highest
     const pointsContract = new ethers.Contract(token, SophPointsMinter.abi,provider);
 
-    const userbalances = await asusersarray.forEach(async user => {
-      const balance = await pointsContract.getUserBalance(user.address);
-      return {address: user.address, score: Number(ethers.formatEther(balance))}
-    });
+    // const userbalances = await asusersarray.forEach(async user => {
+    //   const balance = await pointsContract.getUserBalance(user.address);
+    //   return {address: user.address, score: Number(ethers.formatEther(balance))}
+    // });
     // const users = await pointsContract.getUserBalance(address);
-    console.log(userbalances);
+    //console.log(userbalances);
     //userbalances
-    let sortedInput = [];
+   // let sortedInput = [];
     //userbalances.slice().sort((a, b) => b.score - a.score);
-    //let sortedInput = usersarray.slice().sort((a, b) => b.score - a.score);
+    let sortedInput = userbalances.slice().sort((a, b) => b.score - a.score);
     // const tokenBalance = await pointsContract.getUserBalance(address);
     // /console.log(tokenBalance);
     return sortedInput.slice(0, 20);;
