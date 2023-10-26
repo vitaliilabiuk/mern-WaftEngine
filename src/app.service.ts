@@ -43,7 +43,7 @@ export class AppService {
     const leaderBoard = [];
     // get users addresses
     // get users balances and filter by highest
-    const pointsContract = new ethers.Contract(token1, SophPointsMinter.abi,provider);
+    const pointsContract = new ethers.Contract(token, SophPointsMinter.abi,provider);
 
     const  userbalances = await asusersarray.forEach(async user => {
       const balance = await pointsContract.getUserBalance(user.address);
