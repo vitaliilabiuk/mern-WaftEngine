@@ -15,6 +15,11 @@ export class AppController {
     return await this.appService.getLeaderBoard();
   }
 
+  @Get('itemprice/:address/:itemid')
+  async itemPrice(@Param('address') address: string,@Param('itemid') itemid: number): Promise<number> {
+    return await this.appService.getItemPrice(address,itemid);
+  }
+
   // @Post('addusers/')
   // async addusers(): Promise<any> {
   //   return await this.appService.addUsers();

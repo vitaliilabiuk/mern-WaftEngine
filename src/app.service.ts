@@ -60,7 +60,14 @@ export class AppService {
     return sortedInput.slice(0, 20);;
   }
 
-
+  async getItemPrice(address:string,itemid: number): Promise<number> {
+    console.log("weareablePrice");
+    const provider = this.provider();
+    const WearablesMinterContract = new ethers.Contract(wearableminter, SophWearablesMinter.abi,provider);
+    const weareablePrice = await WearablesMinterContract.getItemsPrice(itemid);
+    console.log(weareablePrice);
+    return Number(weareablePrice);
+  }
 
   async getBalance(address: string): Promise<number> {
     const provider = this.provider();
@@ -195,17 +202,15 @@ export class AppService {
       const tokenBalance = await pointsContract.getUserBalance(useraddress);
       const weareablePrice = await WearablesMinterContract.getItemsPrice(itemId);
 
-      const mint = await WearablesMinterContract.mint(useraddress, itemId);
-      await mint.wait();
-      console.log(mint);
-      return Number(ethers.formatEther(tokenBalance));
-
-      // if( ethers.parseEther(tokenBalance)  < weareablePrice){
-      //   console.log(weareablePrice);
-      //   return "not enough points";
-      // } else {
-     
-      // }
+      if(tokenBalance < weareablePrice){
+        console.log(weareablePrice);
+        return "not enough points";
+      } else {
+        const mint = await WearablesMinterContract.mint(useraddress, itemId);
+        await mint.wait();
+        console.log(mint);
+        return Number(ethers.formatEther(tokenBalance));
+      }
       
     } catch (error){
       return console.log("error"+error);
