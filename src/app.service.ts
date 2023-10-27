@@ -7,7 +7,7 @@ const token = "0x6Fc4E775b4f5F9D621738014de3113D2cdEAE9e7";
 
 const token1 = "0x55Eb35681f3cdd068c1b8804133387d4e72B26ec";
 //const token = "0xdec404576134e5c6271782bc74f4fe17562d4eb9";
-const wearableminter = "0x91B78a96b75Fd189886904AF936Ce21A0E26B8D3";
+const wearableminter = "0x1289636B701AfcA6D095164D9ce0f44bba0b95FC";
 
 import userspoints from "./points.json";
 import asusers from "./use.json";
