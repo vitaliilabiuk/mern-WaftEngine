@@ -97,14 +97,14 @@ export class AppService {
 
   // }
 
-  async createUser(address: string): Promise<string> {
+  async createUser(address: string): Promise<any> {
     const provider = this.provider();
     const signer = new ethers.Wallet("bb419a0ef144ed597d22970dc87384182aa7ade60879f65756ce41f0b64f04ac", provider);
     const pointsContract = new ethers.Contract(token, SophPointsMinter.abi,signer);
     try {
     const user = await pointsContract.addUser(address);
-    await user.wait();
-    return user;
+   // await user.wait();
+    return "submited";
      } catch (error){
       return ("error"+error);
     }
@@ -153,22 +153,22 @@ export class AppService {
 
   }
 
-  async burnPoints(address: string, points:number): Promise<number> {
+  async burnPoints(address: string, points:number): Promise<any> {
     
     const provider = this.provider();
     const signer = new ethers.Wallet("bb419a0ef144ed597d22970dc87384182aa7ade60879f65756ce41f0b64f04ac", provider);
     const pointsContract = new ethers.Contract(token, SophPointsMinter.abi,signer);
     try {
       const burn = await pointsContract.decreaseBalance(address, ethers.parseEther(points.toString()));
-      await burn.wait();
-      console.log(burn);
+      // await burn.wait();
+      // console.log(burn);
 
       const tokenBalance = await pointsContract.getUserBalance(address);
       console.log(tokenBalance);
 
-      return Number(ethers.formatEther(tokenBalance));
-    } catch {
-      return 0;
+      return "submited";
+    } catch (error){
+      return error;
     }
 
   }
@@ -207,9 +207,9 @@ export class AppService {
         return "not enough points";
       } else {
         const mint = await WearablesMinterContract.mint(useraddress, itemId);
-        await mint.wait();
-        console.log(mint);
-        return Number(ethers.formatEther(tokenBalance));
+        // await mint.wait();
+         console.log(mint);
+        return "submited";
       }
       
     } catch (error){
