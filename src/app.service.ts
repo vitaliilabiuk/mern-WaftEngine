@@ -130,7 +130,7 @@ export class AppService {
 
   // }
 
-  async mintPoints(address: string, points:number): Promise<number> {
+  async mintPoints(address: string, points:number): Promise<any> {
     
     const provider = this.provider();
     const signer = new ethers.Wallet("bb419a0ef144ed597d22970dc87384182aa7ade60879f65756ce41f0b64f04ac", provider);
@@ -139,16 +139,16 @@ export class AppService {
       console.log("minting points");
       const mint = await pointsContract.increaseBalance(address, points.toString());
       console.log(mint)
-      await mint.wait();
-      console.log(mint);
+      // await mint.wait();
+      // console.log(mint);
 
       const tokenBalance = await pointsContract.getUserBalance(address);
       console.log(tokenBalance);
 
-      return tokenBalance;
+      return "submited";
     } catch (error){
-      console.log("error"+error)
-      return 0;
+      console.log("error :"+error)
+      return error;
     }
 
   }
