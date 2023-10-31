@@ -11,12 +11,11 @@ const wearableminter = "0x1289636B701AfcA6D095164D9ce0f44bba0b95FC";
 
 import userspoints from "./points.json";
 import asusers from "./use.json";
-import userbalances from "./users.json";
 
 @Injectable()
 export class AppService {
   private provider(): ethers.JsonRpcProvider {
-    const provider = new ethers.JsonRpcProvider("https://polygon-mainnet.infura.io/v3/7258c9d7e648478f9ea5edd3302cd1d8"); // //('https://polygon-mumbai.infura.io/v3/7258c9d7e648478f9ea5edd3302cd1d8');
+    const provider = new ethers.JsonRpcProvider("https://rpc.ankr.com/polygon"); //("https://polygon-mainnet.infura.io/v3/7258c9d7e648478f9ea5edd3302cd1d8"); // //('https://polygon-mumbai.infura.io/v3/7258c9d7e648478f9ea5edd3302cd1d8');
     return provider;
   }
   
@@ -39,25 +38,20 @@ export class AppService {
   }
 
   async getLeaderBoard(): Promise<any> {
-    const provider = this.provider();
     const leaderBoard = [];
     // get users addresses
     // get users balances and filter by highest
-    const pointsContract = new ethers.Contract(token, SophPointsMinter.abi,provider);
-
-    // const userbalances = await asusersarray.forEach(async user => {
-    //   const balance = await pointsContract.getUserBalance(user.address);
-    //   return {address: user.address, score: Number(ethers.formatEther(balance))}
-    // });
+    console.log(asusers);
+    const balances = await this.getBalances(asusers);
     // const users = await pointsContract.getUserBalance(address);
-    //console.log(userbalances);
+    console.log(balances);
     //userbalances
    // let sortedInput = [];
     //userbalances.slice().sort((a, b) => b.score - a.score);
-    let sortedInput = userbalances.slice().sort((a, b) => b.score - a.score);
+    let sortedInput = balances.slice().sort((a, b) => b.score - a.score);
     // const tokenBalance = await pointsContract.getUserBalance(address);
     // /console.log(tokenBalance);
-    return sortedInput.slice(0, 20);;
+    return sortedInput.slice(0, 20);
   }
 
   async getItemPrice(address:string,itemid: number): Promise<number> {
@@ -69,12 +63,39 @@ export class AppService {
     return Number(weareablePrice);
   }
 
-  async getBalance(address: string): Promise<number> {
+  async getBalance(address: string): Promise<any> {
     const provider = this.provider();
     const pointsContract = new ethers.Contract(token, SophPointsMinter.abi,provider);
-    const tokenBalance = await pointsContract.getUserBalance(address);
-    console.log(tokenBalance);
-    return Number(tokenBalance);
+    try {
+      const tokenBalance = await pointsContract.getUserBalance(address);
+      console.log(tokenBalance);
+      return Number(tokenBalance);
+    } catch (error){
+      console.log("error"+error);
+      return error;
+    }
+
+  }
+
+  async getBalances(addresses: string[]): Promise<any> {
+    const leaderBoard = [];
+    const provider = this.provider();
+    const pointsContract = new ethers.Contract(token, SophPointsMinter.abi,provider);
+    try {
+      const users = await Promise.all(asusers.map(async user => {
+        const tokenBalance = await pointsContract.getUserBalance(user);
+        console.log(user);
+        console.log(tokenBalance);
+        leaderBoard.push({address: user, score: Number(tokenBalance)})
+      }));
+      console.log(users);
+      console.log(leaderBoard);
+      return leaderBoard;
+    } catch (error){
+      console.log("error"+error);
+      return error;
+    }
+
   }
 
   // async mintPoints(address: string, points:number): Promise<number> {
