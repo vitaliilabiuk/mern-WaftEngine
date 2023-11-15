@@ -30,6 +30,11 @@ export class AppController {
     return await this.appService.createUser(address);
   }
 
+  // @Post('mintbatch/')
+  // async mintbatchIntems(): Promise<string> {
+  //   return await this.appService.directMintWearables();
+  // }
+
   // @Post('createusers/:address')
   // async mintUser(@Param('address') address[]: string[]): Promise<string> {
   //   return await this.appService.createUser(address);

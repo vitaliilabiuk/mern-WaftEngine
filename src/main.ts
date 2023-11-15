@@ -6,13 +6,13 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
   const config = new DocumentBuilder()
-    .setTitle('NestJS Swagger')
+    .setTitle('sophpoints Swagger')
     .setDescription('API description')
     .setVersion('1.0')
     .build();
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api', app, document);
 
-  await app.listen(process.env.PORT || 8080 ) //(3000); //;// //(process.env.PORT || 8080 ); // // // //  // //; // ;// 
+  await app.listen(3000); //(process.env.PORT || 8080 ) // //;// //(process.env.PORT || 8080 ); // // // //  // //; // ;// 
 }
 bootstrap();

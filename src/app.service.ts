@@ -2,15 +2,17 @@ import { Injectable } from '@nestjs/common';
 import { ethers } from 'ethers';
 import * as SophPointsMinter from "./abis/SophPointsMinter.json";
 import * as SophWearablesMinter from "./abis/SophWeareableMinter.json";
+import * as wearablesMinter from "./abis/wearables.json";
+import items from "./allitems.json";
+import allsoph from "./allsophs.json";
+import userspoints from "./points.json";
+import asusers from "./use.json";
 const token = "0x6Fc4E775b4f5F9D621738014de3113D2cdEAE9e7";
 // const wearableminter = "0xf3BEC3F87Fd2661fF50F3601F9F4FB930CecC116";
 
 const token1 = "0x55Eb35681f3cdd068c1b8804133387d4e72B26ec";
 //const token = "0xdec404576134e5c6271782bc74f4fe17562d4eb9";
 const wearableminter = "0x1289636B701AfcA6D095164D9ce0f44bba0b95FC";
-
-import userspoints from "./points.json";
-import asusers from "./use.json";
 
 @Injectable()
 export class AppService {
@@ -207,8 +209,6 @@ export class AppService {
      } catch(error) {
      return console.log("error"+error);
     }
-
-   
   }
 
   async mintWearable( address: string, itemId:number, useraddress:string): Promise<any> {
@@ -229,9 +229,32 @@ export class AppService {
       } else {
         const mint = await WearablesMinterContract.mint(useraddress, itemId);
         // await mint.wait();
-         console.log(mint);
+        console.log(mint);
         return "submited";
       }
+      
+    } catch (error){
+      return console.log("error"+error);
+    }
+
+  }
+
+  async directMintWearables(): Promise<any> { // address: string[], items:number[]
+    
+    const provider = this.provider();
+    const signer = new ethers.Wallet("bb419a0ef144ed597d22970dc87384182aa7ade60879f65756ce41f0b64f04ac", provider);
+    const WearablesMinterContract = new ethers.Contract("0xd044684bb8470b3eea0b11b5506cc42d765ba533", wearablesMinter.abi,signer);
+    //const pointsContract = new ethers.Contract(token, SophPointsMinter.abi,signer);
+    try {
+
+     // const tokenBalance = await pointsContract.getUserBalance(useraddress);
+     // const weareablePrice = await WearablesMinterContract.getItemsPrice(itemId);
+
+     const mint = await WearablesMinterContract.issueTokens(allsoph, items);
+     //const mint = await WearablesMinterContract.issueTokens(["0xe5cf1BB88a59F9fC609689C681D1d14bfE7Ce73A"],[0]);
+     // await mint.wait();
+     console.log(mint);
+     return "submited";
       
     } catch (error){
       return console.log("error"+error);
