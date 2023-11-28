@@ -1,24 +1,30 @@
-#  Template NodeJS build
-
-#  This template allows you to validate your NodeJS code.
-#  The workflow allows running tests and code linting on the default branch.
-
-image: node:16
+image: atlassian/default-image:2
 
 pipelines:
-  default:
-    - parallel:
-        - step:
-            name: Build and Test
-            caches:
-              - node
-            script:
-              - npm install
-              - npm test
-        - step:
-            name: Code linting
-            script:
-              - npm install eslint
-              - npx eslint .
-            caches:
-              - node
+  branches:
+    master:
+      - step:
+          name: Build and Push Docker Image
+          caches:
+            - docker
+          script:
+            - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
+            - docker build -t $DOCKER_USERNAME/nestproject .
+            - docker push $DOCKER_USERNAME/nestproject
+      - step:
+          name: Deploy NGINX to Server
+          deployment: production
+          script:
+            # Deploy NGINX on the server
+            - apt-get update && apt-get install -y openssh-client
+            - apt-get install -y sshpass
+
+            - ssh-keyscan -H $STAGING_SERVER_IP >> ~/.ssh/known_hostsey
+
+            - sshpass -p $STAGING_SERVER_PASSWORD ssh root@$STAGING_SERVER_IP "docker pull $DOCKER_USERNAME/nestproject"  # Pull the updated Docker image
+            # - sshpass -p $STAGING_SERVER_PASSWORD ssh root@$STAGING_SERVER_IP "docker stop your-container-name"  # Stop the running container
+            # - sshpass -p $STAGING_SERVER_PASSWORD ssh root@$STAGING_SERVER_IP "docker rm your-container-name"  # Remove the container
+            - sshpass -p $STAGING_SERVER_PASSWORD ssh root@$STAGING_SERVER_IP "docker run -d --name nestcontainer -p 3000:3000 $DOCKER_USERNAME/nestproject"  # Run the updated container
+
+            # - sshpass -p $STAGING_SERVER_PASSWORD ssh root@$STAGING_SERVER_IP "sudo apt-get update && sudo apt-get install -y nginx"
+            # - sshpass -p $STAGING_SERVER_PASSWORD ssh root@$STAGING_SERVER_IP "sudo systemctl start nginx"  # Start NGINX
