@@ -50,10 +50,10 @@ pipelines:
             - docker load --input "${IMAGE_NAME}.tar"
             - VERSION="prod-0.1.${BITBUCKET_BUILD_NUMBER}"
 
-            - IMAGE="${DOCKERHUB_NAMESPACE}/${IMAGE_NAME}${VERSION}"
+            - IMAGE="${DOCKERHUB_NAMESPACE}/${IMAGE_NAME}"
 
-            - docker tag "${IMAGE_NAME}"
-            - docker push "${IMAGE_NAME}"
+            - docker tag "${IMAGE_NAME}" "${IMAGE}:${VERSION}"
+            - docker push "${IMAGE}:${VERSION}"
           services:
             - docker
       - step:
