@@ -48,11 +48,13 @@ pipelines:
             - echo "dckr_pat_m24UygMMPY6bgLE6xwTe3Zz_aEs" | docker login --username "$DOCKER_USERNAME" --password-stdin
             - IMAGE_NAME=$BITBUCKET_REPO_SLUG
             - docker load --input "${IMAGE_NAME}.tar"
-            - VERSION="prod-0.2.${BITBUCKET_BUILD_NUMBER}"
+            - VERSION="prod-0.1.${BITBUCKET_BUILD_NUMBER}"
+
             - IMAGE="${DOCKERHUB_NAMESPACE}/${IMAGE_NAME}${VERSION}"
+
             - echo "${IMAGE}"
-            - docker tag "${IMAGE_NAME}" "${IMAGE}"
-            - docker push "${IMAGE}"
+            - docker tag "${IMAGE_NAME}" "${IMAGE}:${VERSION}"
+            - docker push "${IMAGE}:${VERSION}"
           services:
             - docker
       - step:
