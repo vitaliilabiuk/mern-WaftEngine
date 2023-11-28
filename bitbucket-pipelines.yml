@@ -64,13 +64,12 @@ pipelines:
             # Deploy NGINX on the server
             - apt-get update && apt-get install -y openssh-client
             - apt-get install -y sshpass
+            # Set up SSH configuration
 
-            - echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_rsa
-            - chmod 600 ~/.ssh/id_rsa
+            - ssh-keyscan -H $STAGING_SERVER_IP >> ~/.ssh/known_hosts
 
-            - ssh-keyscan -H $STAGING_SERVER_IP >> ~/.ssh/known_hostsey
             
-            - sshpass -p 'gwGdcpHscNnwF5' ssh root@142.11.237.140 "cd /root" 
+            - sshpass -p $STAGING_SERVER_PASSWORD ssh root@$STAGING_SERVER_IP "mkdir -p /var/www/build"
             - sshpass -p $STAGING_SERVER_PASSWORD ssh root@$STAGING_SERVER_IP "docker pull $DOCKER_USERNAME/${IMAGE_NAME}:${VERSION}"  # Pull the updated Docker image
             - ssh root@$STAGING_SERVER_IP "docker stop nestcontainer || true"  # Stop the running container (if exists)
             - ssh root@$STAGING_SERVER_IP "docker rm nestcontainer || true"  # Remove the container (if exists)
