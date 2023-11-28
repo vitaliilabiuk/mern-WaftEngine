@@ -59,13 +59,15 @@ pipelines:
       - step:
           name: Deploy NGINX to Server
           script:
+            - IMAGE_NAME=$BITBUCKET_REPO_SLUG
+            - VERSION="prod-0.1.${BITBUCKET_BUILD_NUMBER}"
             # Deploy NGINX on the server
             - apt-get update && apt-get install -y openssh-client
             - apt-get install -y sshpass
 
             - ssh-keyscan -H $STAGING_SERVER_IP >> ~/.ssh/known_hostsey
 
-            - sshpass -p $STAGING_SERVER_PASSWORD ssh root@$STAGING_SERVER_IP "docker pull $DOCKER_USERNAME/${IMAGE}:${VERSION}"  # Pull the updated Docker image
+            - sshpass -p $STAGING_SERVER_PASSWORD ssh root@$STAGING_SERVER_IP "docker pull $DOCKER_USERNAME/${IMAGE_NAME}:${VERSION}"  # Pull the updated Docker image
             - ssh root@$STAGING_SERVER_IP "docker stop nestcontainer || true"  # Stop the running container (if exists)
             - ssh root@$STAGING_SERVER_IP "docker rm nestcontainer || true"  # Remove the container (if exists)
             - sshpass -p $STAGING_SERVER_PASSWORD ssh root@$STAGING_SERVER_IP "docker run -d --name nestcontainer -p 3000:3000 $DOCKER_USERNAME/${IMAGE}:${VERSION}"  # Run the updated container
