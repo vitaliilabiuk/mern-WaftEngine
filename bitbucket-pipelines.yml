@@ -44,7 +44,7 @@ pipelines:
           name: Deploy to Production
           deployment: Production
           script:
-            - echo ${DOCKER_USERNAME} | docker login --username "$DOCKER_USERNAME" --password-stdin
+            - echo $DOCKERHUB_PASSWORD | docker login --username "$DOCKER_USERNAME" --password-stdin
             - IMAGE_NAME=$BITBUCKET_REPO_SLUG
             - docker load --input "${IMAGE_NAME}.tar"
             - VERSION="prod-0.1.${BITBUCKET_BUILD_NUMBER}"
