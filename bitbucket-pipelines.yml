@@ -69,7 +69,7 @@ pipelines:
             - ssh-keyscan -H $STAGING_SERVER_IP >> ~/.ssh/known_hosts
 
             
-            - sshpass -p $STAGING_SERVER_PASSWORD ssh root@$STAGING_SERVER_IP "mkdir -p /var/www/build"
+            - sshpass -p $STAGING_SERVER_PASSWORD ssh root@$STAGING_SERVER_IP "sudo dockerd"
             - sshpass -p $STAGING_SERVER_PASSWORD ssh root@$STAGING_SERVER_IP "docker pull $DOCKER_USERNAME/${IMAGE_NAME}:${VERSION}"  # Pull the updated Docker image
             - ssh root@$STAGING_SERVER_IP "docker stop nestcontainer || true"  # Stop the running container (if exists)
             - ssh root@$STAGING_SERVER_IP "docker rm nestcontainer || true"  # Remove the container (if exists)
