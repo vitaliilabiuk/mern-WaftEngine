@@ -52,7 +52,6 @@ pipelines:
 
             - IMAGE="${DOCKERHUB_NAMESPACE}/${IMAGE_NAME}${VERSION}"
 
-            - echo "${IMAGE}"
             - docker tag "${IMAGE_NAME}" "${IMAGE}:${VERSION}"
             - docker push "${IMAGE}:${VERSION}"
           services:
