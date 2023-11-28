@@ -1,19 +1,60 @@
-image: atlassian/default-image:2
+
+# Template docker-push
+
+# This template allows you to build and push your docker image to a Docker Hub account.
+# The workflow allows running tests, code linting and security scans on feature branches (as well as master).
+# The docker image will be validated and pushed to the docker registry after the code is merged to master.
+
+# Prerequisites: $DOCKERHUB_USERNAME, $DOCKERHUB_PASSWORD setup as deployment variables
+
+image: atlassian/default-image:3
 
 pipelines:
+  default:
+    - parallel:
+        - step:
+            name: Build and Test
+            script:
+              - IMAGE_NAME=$BITBUCKET_REPO_SLUG
+              - docker build . --file Dockerfile --tag ${IMAGE_NAME}
+            services:
+              - docker
+            caches:
+              - docker
+        - step:
+            name: Lint the Dockerfile
+            image: hadolint/hadolint:latest-debian
+            script:
+              - hadolint Dockerfile
   branches:
     master:
       - step:
-          name: Build and Push Docker Image
+          name: Build and Test
+          script:
+            - IMAGE_NAME=$BITBUCKET_REPO_SLUG
+            - docker build . --file Dockerfile --tag ${IMAGE_NAME}
+            - docker save ${IMAGE_NAME} --output "${IMAGE_NAME}.tar"
+          services:
+            - docker
           caches:
             - docker
+          artifacts:
+            - "*.tar"
+      - step:
+          name: Deploy to Production
+          deployment: Production
           script:
-            - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
-            - docker build -t $DOCKER_USERNAME/nestproject .
-            - docker push $DOCKER_USERNAME/nestproject
+            - echo ${DOCKERHUB_PASSWORD} | docker login --username "$DOCKERHUB_USERNAME" --password-stdin
+            - IMAGE_NAME=$BITBUCKET_REPO_SLUG
+            - docker load --input "${IMAGE_NAME}.tar"
+            - VERSION="prod-0.1.${BITBUCKET_BUILD_NUMBER}"
+            - IMAGE=${DOCKERHUB_NAMESPACE}/${IMAGE_NAME}
+            - docker tag "${IMAGE_NAME}" "${IMAGE}:${VERSION}"
+            - docker push "${IMAGE}:${VERSION}"
+          services:
+            - docker
       - step:
           name: Deploy NGINX to Server
-          deployment: production
           script:
             # Deploy NGINX on the server
             - apt-get update && apt-get install -y openssh-client
@@ -21,10 +62,10 @@ pipelines:
 
             - ssh-keyscan -H $STAGING_SERVER_IP >> ~/.ssh/known_hostsey
 
-            - sshpass -p $STAGING_SERVER_PASSWORD ssh root@$STAGING_SERVER_IP "docker pull $DOCKER_USERNAME/nestproject"  # Pull the updated Docker image
-            # - sshpass -p $STAGING_SERVER_PASSWORD ssh root@$STAGING_SERVER_IP "docker stop your-container-name"  # Stop the running container
-            # - sshpass -p $STAGING_SERVER_PASSWORD ssh root@$STAGING_SERVER_IP "docker rm your-container-name"  # Remove the container
-            - sshpass -p $STAGING_SERVER_PASSWORD ssh root@$STAGING_SERVER_IP "docker run -d --name nestcontainer -p 3000:3000 $DOCKER_USERNAME/nestproject"  # Run the updated container
+            - sshpass -p $STAGING_SERVER_PASSWORD ssh root@$STAGING_SERVER_IP "docker pull $DOCKER_USERNAME/${IMAGE}:${VERSION}"  # Pull the updated Docker image
+            - ssh root@$STAGING_SERVER_IP "docker stop nestcontainer || true"  # Stop the running container (if exists)
+            - ssh root@$STAGING_SERVER_IP "docker rm nestcontainer || true"  # Remove the container (if exists)
+            - sshpass -p $STAGING_SERVER_PASSWORD ssh root@$STAGING_SERVER_IP "docker run -d --name nestcontainer -p 3000:3000 $DOCKER_USERNAME/${IMAGE}:${VERSION}"  # Run the updated container
 
             # - sshpass -p $STAGING_SERVER_PASSWORD ssh root@$STAGING_SERVER_IP "sudo apt-get update && sudo apt-get install -y nginx"
             # - sshpass -p $STAGING_SERVER_PASSWORD ssh root@$STAGING_SERVER_IP "sudo systemctl start nginx"  # Start NGINX
