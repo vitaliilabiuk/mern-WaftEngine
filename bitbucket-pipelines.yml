@@ -74,7 +74,7 @@ pipelines:
 
             - sshpass -p $STAGING_SERVER_PASSWORD ssh root@$STAGING_SERVER_IP "docker stop nestcontainer || true"
             - sshpass -p $STAGING_SERVER_PASSWORD ssh root@$STAGING_SERVER_IP "docker rm nestcontainer || true"  # Remove the container (if exists)
-            
+            - echo "$DOCKER_USERNAME/${IMAGE}:${VERSION}"
             - sshpass -p $STAGING_SERVER_PASSWORD ssh root@$STAGING_SERVER_IP "docker run -d --name nestcontainer -p 3000:3000 $DOCKER_USERNAME/${IMAGE}:${VERSION}"  # Run the updated container
 
             # - sshpass -p $STAGING_SERVER_PASSWORD ssh root@$STAGING_SERVER_IP "sudo apt-get update && sudo apt-get install -y nginx"
