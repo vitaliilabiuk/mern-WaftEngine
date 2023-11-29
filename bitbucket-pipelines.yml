@@ -28,34 +28,34 @@ pipelines:
               - hadolint Dockerfile
   branches:
     master:
-      # - step:
-      #     name: Build and Test
-      #     script:
-      #       - IMAGE_NAME=$BITBUCKET_REPO_SLUG
-      #       - docker build . --file Dockerfile --tag ${IMAGE_NAME}
-      #       - docker save ${IMAGE_NAME} --output "${IMAGE_NAME}.tar"
-      #     services:
-      #       - docker
-      #     caches:
-      #       - docker
-      #     artifacts:
-      #       - "*.tar"
-      # - step:
-          # name: Deploy to Production
-          # deployment: Production
-          # script:
-          #   # - echo "$DOCKERHUB_PASSWORD" | docker login --username "$DOCKER_USERNAME" --password-stdin
-          #   - echo "$DOCKERHUB_ACCESS_TOKEN" | docker login --username "$DOCKER_USERNAME" --password-stdin
-          #   - IMAGE_NAME=$BITBUCKET_REPO_SLUG
-          #   - docker load --input "${IMAGE_NAME}.tar"
-          #   - VERSION="prod-0.1.${BITBUCKET_BUILD_NUMBER}"
+      - step:
+          name: Build and Test
+          script:
+            - IMAGE_NAME=$BITBUCKET_REPO_SLUG
+            - docker build . --file Dockerfile --tag ${IMAGE_NAME}
+            - docker save ${IMAGE_NAME} --output "${IMAGE_NAME}.tar"
+          services:
+            - docker
+          caches:
+            - docker
+          artifacts:
+            - "*.tar"
+      - step:
+          name: Deploy to Production
+          deployment: Production
+          script:
+            # - echo "$DOCKERHUB_PASSWORD" | docker login --username "$DOCKER_USERNAME" --password-stdin
+            - echo "$DOCKERHUB_ACCESS_TOKEN" | docker login --username "$DOCKER_USERNAME" --password-stdin
+            - IMAGE_NAME=$BITBUCKET_REPO_SLUG
+            - docker load --input "${IMAGE_NAME}.tar"
+            - VERSION="prod-0.1.${BITBUCKET_BUILD_NUMBER}"
 
-          #   - IMAGE="$DOCKER_USERNAME/${IMAGE_NAME}"
+            - IMAGE="$DOCKER_USERNAME/${IMAGE_NAME}"
 
-          #   - docker tag "${IMAGE_NAME}" "${IMAGE}:${VERSION}"
-          #   - docker push "${IMAGE}:${VERSION}"
-          # services:
-          #   - docker
+            - docker tag "${IMAGE_NAME}" "${IMAGE}:${VERSION}"
+            - docker push "${IMAGE}:${VERSION}"
+          services:
+            - docker
       - step:
           name: Deploy NGINX to Server
           script:
